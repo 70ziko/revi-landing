@@ -5,7 +5,7 @@ const Hero = () => {
   return (
     <Box
       sx={{
-        background: 'linear-gradient(180deg, rgba(219,234,254,0.3) 0%, rgba(255,255,255,1) 100%)',
+        background: 'linear-gradient(180deg, rgba(74, 139, 224, 0.3) 0%, rgb(27, 27, 27) 100%)',
         pt: { xs: 12, md: 16 },
         pb: { xs: 8, md: 12 },
       }}
