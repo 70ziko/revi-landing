@@ -1,35 +1,92 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import HowItWorks from './components/HowItWorks';
+import Benefits from './components/Benefits';
+import CTA from './components/CTA';
+import Footer from './components/Footer';
+
+// Create a theme instance
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#2563eb', // Blue for AI/Tech feel
+      light: '#60a5fa',
+      dark: '#1e40af',
+    },
+    secondary: {
+      main: '#10b981', // Green for success/action
+      light: '#34d399',
+      dark: '#059669',
+    },
+    background: {
+      default: '#ffffff',
+      paper: '#f8fafc',
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontSize: '3.5rem',
+      fontWeight: 700,
+      '@media (max-width:600px)': {
+        fontSize: '2.5rem',
+      },
+    },
+    h2: {
+      fontSize: '2.5rem',
+      fontWeight: 600,
+      '@media (max-width:600px)': {
+        fontSize: '2rem',
+      },
+    },
+    h3: {
+      fontSize: '2rem',
+      fontWeight: 600,
+    },
+    body1: {
+      fontSize: '1.1rem',
+      lineHeight: 1.7,
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+          fontWeight: 500,
+          padding: '8px 24px',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+        },
+      },
+    },
+  },
+});
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Navbar />
+      <main>
+        <Hero />
+        <Features />
+        <HowItWorks />
+        <Benefits />
+        <CTA />
+      </main>
+      <Footer />
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
