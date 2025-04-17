@@ -8,11 +8,11 @@ import Benefits from './components/Benefits';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
 
-// Create a theme instance
 const theme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
-      main: '#2563eb', // Blue for AI/Tech feel
+      main: '#3b82f6', // Adjusted Blue for AI/Tech feel
       light: '#60a5fa',
       dark: '#1e40af',
     },
@@ -22,8 +22,8 @@ const theme = createTheme({
       dark: '#059669',
     },
     background: {
-      default: '#ffffff',
-      paper: '#f8fafc',
+      default: '#121212',
+      paper: '#1e1e1e',
     },
   },
   typography: {
