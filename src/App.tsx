@@ -1,4 +1,4 @@
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -77,13 +77,30 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navbar />
-      <main>
+      <Box 
+        component="main" 
+        sx={{ 
+          width: '100%',
+          display: 'flex', 
+          flexDirection: 'column',
+          overflow: 'hidden',
+          '& > *': {
+            width: '100%',
+            maxWidth: 'none',
+            '& .MuiContainer-root': {
+              maxWidth: '100% !important',
+              paddingLeft: { xs: 2, sm: 4 },
+              paddingRight: { xs: 2, sm: 4 },
+            },
+          }
+        }}
+      >
         <Hero />
         <Features />
         <HowItWorks />
         <Benefits />
         <CTA />
-      </main>
+      </Box>
       <Footer />
     </ThemeProvider>
   );
