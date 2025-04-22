@@ -1,18 +1,21 @@
-import { Container, Typography, Button, Box, Stack } from '@mui/material';
+import { VolunteerActivism } from '@mui/icons-material';
+import { Container, Typography, Button, Box, Stack, TextField, Divider } from '@mui/material';
+import { useState } from 'react';
 
 const Hero = () => {
-  
-  const handleJoinWaitlist = () => {
-    const waitlistButton = document.getElementById('join-waitlist-button');
-    if (waitlistButton) {
-      const waitlistMessage = document.createElement('p');
-      waitlistMessage.innerText = 'Thank you for joining the waitlist! We will notify you when we launch.';
-      waitlistMessage.style.color = '#10b981'; // Green
-      waitlistMessage.style.fontSize = '1.2rem';
-      waitlistMessage.style.fontWeight = 'bold';
-      waitlistMessage.style.marginTop = '16px';
-      waitlistButton.parentNode?.insertBefore(waitlistMessage, waitlistButton.nextSibling);
-      waitlistButton.parentNode?.removeChild(waitlistButton);
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Waitlist submission failed', err);
     }
   };
 
@@ -58,25 +61,63 @@ const Hero = () => {
               spacing={2}
               justifyContent={{ xs: 'center', md: 'flex-start' }}
             >
-              <Button
-                id="join-waitlist-button"
-                variant="contained"
-                size="large"
-                color="primary"
-                onClick={handleJoinWaitlist}
-              >
-                Join Waitlist
-              </Button>
-              <Button
+              {!submitted ? (
+                <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                  <TextField
+                    required
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    sx={{ flex: 1 }}
+                  />
+                  <Button type="submit" variant="contained" size="large" color="primary">
+                    Join Waitlist
+                  </Button>
+                </Box>
+              ) : (
+                <Typography variant="body1" color="success.main" sx={{ fontWeight: 'bold', mt: 2 }}>
+                  Thank you for joining the waitlist! We will notify you when we launch.
+                </Typography>
+              )}
+              {/* horizontal rule on mobile */}
+              <Divider
+                orientation="horizontal"
+                flexItem
+                sx={{ display: { xs: 'block', sm: 'none' }, my: 2, borderColor: 'divider' }}
+              />
+              {/* vertical rule on desktop */}
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ display: { xs: 'none', sm: 'block' }, mx: 2, borderColor: 'divider' }}
+              />
+                <Button
                 variant="outlined"
                 size="large"
                 href="https://patreon.com/your-project"
                 target="_blank"
                 rel="noopener noreferrer"
                 color="primary"
-              >
+                sx={{
+                  backgroundColor: 'white',
+                  color: 'primary.main',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  borderColor: 'primary.main',
+                  '&:hover': {
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                  },
+                }}
+                // Note: There isn't a standard MUI icon for Patreon.
+                // Using VolunteerActivism as a placeholder for "support".
+                // Consider using an SVG icon component for the actual Patreon logo if needed.
+                endIcon={<VolunteerActivism />}
+                // endIcon={<ArrowForward />}
+                >
                 Back the Project
-              </Button>
+                </Button>
             </Stack>
             <Typography
               variant="body2"
