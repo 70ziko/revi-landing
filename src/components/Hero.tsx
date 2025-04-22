@@ -1,13 +1,13 @@
 import { Container, Typography, Button, Box, Stack } from '@mui/material';
-import { PhotoCamera, CompareArrows } from '@mui/icons-material';
 
 const Hero = () => {
   return (
     <Box
       sx={{
         background: 'linear-gradient(180deg, rgba(74, 139, 224, 0.3) 0%, rgb(27, 27, 27) 100%)',
-        pt: { xs: 12, md: 16 },
+        pt: { xs: 12, md: 24 },
         pb: { xs: 8, md: 12 },
+        pl: { xs: 2, sm: 12 },
       }}
     >
       <Container maxWidth="lg">
@@ -46,18 +46,20 @@ const Hero = () => {
               <Button
                 variant="contained"
                 size="large"
-                startIcon={<PhotoCamera />}
+                href="/waitlist"
                 color="primary"
               >
-                Try with Photo
+                Join Waitlist
               </Button>
               <Button
                 variant="outlined"
                 size="large"
-                startIcon={<CompareArrows />}
+                href="https://patreon.com/your-project"
+                target="_blank"
+                rel="noopener noreferrer"
                 color="primary"
               >
-                Compare Products
+                Back the Project
               </Button>
             </Stack>
             <Typography

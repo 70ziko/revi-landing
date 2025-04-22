@@ -7,6 +7,31 @@ const Navbar = () => {
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
           {/* Logo/Brand */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              color: 'inherit',
+              '&:hover': {
+                textDecoration: 'none',
+                color: 'inherit',
+              },
+            }}
+            href="/"
+            component="a"
+          >
+            {/* Logo */}
+            <Box
+            component="img"
+            src="/src/assets/revi-logo-removebg-preview.png"
+            alt="Revi Logo"
+            sx={{
+              height: 32, // Adjust size as needed
+              width: 'auto',
+              mr: 1,
+            }}
+            />
           <Typography
             variant="h6"
             component="div"
@@ -18,6 +43,7 @@ const Navbar = () => {
           >
             Revi
           </Typography>
+          </Box>
 
           {/* Navigation Links */}
           <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>
