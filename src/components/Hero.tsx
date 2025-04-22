@@ -139,12 +139,16 @@ const Hero = () => {
           >
             <Box
               component="img"
-              src="/placeholder-app-screenshot.png"
+              src="/revi-app-screenshot.jpg"
               alt="Revi App Screenshot"
               sx={{
+                maskImage: 'linear-gradient(to bottom, black 69%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 69%, transparent 100%)', // For Safari compatibility
                 maxWidth: '100%',
                 height: 'auto',
-                maxHeight: 600,
+                // marginTop: 2,
+                paddingTop: 2,
+                maxHeight: 700,
                 filter: 'drop-shadow(0px 4px 20px rgba(0, 0, 0, 0.1))',
                 borderRadius: 4,
               }}
