@@ -41,7 +41,7 @@ const Hero = () => {
               variant="h1"
               gutterBottom
               sx={{
-                background: 'linear-gradient(90deg, #2563eb 0%, #10b981 100%)',
+                background: 'linear-gradient(90deg,rgb(47, 64, 215) 0%, #10b981 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}

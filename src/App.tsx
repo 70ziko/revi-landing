@@ -12,9 +12,9 @@ const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#3b82f6', // Adjusted Blue for AI/Tech feel
-      light: '#60a5fa',
-      dark: '#1e40af',
+      main: '#3d52a0', // Blue
+      light: '#7091e6',
+      dark: '#8697c4',
     },
     secondary: {
       main: '#10b981', // Green for success/action
