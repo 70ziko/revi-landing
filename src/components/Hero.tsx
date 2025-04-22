@@ -1,6 +1,21 @@
 import { Container, Typography, Button, Box, Stack } from '@mui/material';
 
 const Hero = () => {
+  
+  const handleJoinWaitlist = () => {
+    const waitlistButton = document.getElementById('join-waitlist-button');
+    if (waitlistButton) {
+      const waitlistMessage = document.createElement('p');
+      waitlistMessage.innerText = 'Thank you for joining the waitlist! We will notify you when we launch.';
+      waitlistMessage.style.color = '#10b981'; // Green
+      waitlistMessage.style.fontSize = '1.2rem';
+      waitlistMessage.style.fontWeight = 'bold';
+      waitlistMessage.style.marginTop = '16px';
+      waitlistButton.parentNode?.insertBefore(waitlistMessage, waitlistButton.nextSibling);
+      waitlistButton.parentNode?.removeChild(waitlistButton);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -44,10 +59,11 @@ const Hero = () => {
               justifyContent={{ xs: 'center', md: 'flex-start' }}
             >
               <Button
+                id="join-waitlist-button"
                 variant="contained"
                 size="large"
-                href="/waitlist"
                 color="primary"
+                onClick={handleJoinWaitlist}
               >
                 Join Waitlist
               </Button>
