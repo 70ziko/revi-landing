@@ -7,6 +7,7 @@ import HowItWorks from './components/HowItWorks';
 import Benefits from './components/Benefits';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
+import ErrorBoundary from './components/ErrorBoundary';
 // import GraphBackground from './components/GraphBackground';
 
 const theme = createTheme({
@@ -75,6 +76,7 @@ const theme = createTheme({
 
 function App() {
   return (
+    <ErrorBoundary>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       {/* <GraphBackground /> */}
@@ -105,6 +107,7 @@ function App() {
       </Box>
       <Footer />
     </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
