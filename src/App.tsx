@@ -7,6 +7,7 @@ import HowItWorks from './components/HowItWorks';
 import Benefits from './components/Benefits';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
+// import GraphBackground from './components/GraphBackground';
 
 const theme = createTheme({
   palette: {
@@ -76,6 +77,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {/* <GraphBackground /> */}
       <Navbar />
       <Box 
         component="main" 
