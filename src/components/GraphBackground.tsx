@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import * as Ogma from 'ogma';
+import Ogma from 'ogma';
 
 const GraphBackground: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,7 +11,6 @@ const GraphBackground: React.FC = () => {
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    // Initialize Ogma
     ogmaRef.current = new Ogma.Ogma({
       container: container,
       style: {
@@ -29,14 +28,12 @@ const GraphBackground: React.FC = () => {
     });
     const ogma = ogmaRef.current!;
 
-    // Add initial nodes at random positions
     const result = ogma.addNodes(30, {
       x: () => Math.random() * width,
       y: () => Math.random() * height,
     });
     const nodes = result.nodes as string[];
 
-    // Connect each node to a random neighbor
     nodes.forEach((n: string) => {
       const target = nodes[Math.floor(Math.random() * nodes.length)];
       if (target !== n) {
@@ -44,7 +41,6 @@ const GraphBackground: React.FC = () => {
       }
     });
 
-    // Click handler to add a node and connect to nearest neighbors
     const handleClick = (e: MouseEvent) => {
       if (!ogma || !container) return;
       const rect = container.getBoundingClientRect();
@@ -66,10 +62,8 @@ const GraphBackground: React.FC = () => {
       });
     };
 
-    // Listen to global clicks to add nodes
     window.addEventListener('click', handleClick);
 
-    // Cleanup on unmount
     return () => {
       window.removeEventListener('click', handleClick);
       ogma.destroy();

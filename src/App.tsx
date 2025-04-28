@@ -8,7 +8,7 @@ import Benefits from './components/Benefits';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
-// import GraphBackground from './components/GraphBackground';
+import GraphBackground from './components/GraphBackground';
 
 const theme = createTheme({
   palette: {
@@ -79,7 +79,7 @@ function App() {
     <ErrorBoundary>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {/* <GraphBackground /> */}
+      <GraphBackground />
       <Navbar />
       <Box 
         component="main" 
