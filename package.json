@@ -14,10 +14,12 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
-    "graphology": "^0.26.0",
+    "@react-sigma/core": "^5.0.2",
+    "@react-sigma/layout-forceatlas2": "^5.0.2",
+    "@react-sigma/layout-noverlap": "^5.0.2",
+    "graphology": "^0.25.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-sigma": "^1.2.35",
     "sigma": "^3.0.1"
   },
   "devDependencies": {
