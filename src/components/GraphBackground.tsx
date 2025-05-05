@@ -1,74 +1,39 @@
 import React from "react";
-import {
-  Sigma,
-  EdgeShapes,
-  NodeShapes,
-  LoadJSON,
-  LoadGEXF,
-  Filter,
-  ForceAtlas2,
-  RelativeSize,
-  NOverlap,
-  NeoCypher,
-  NeoGraphItemsProducers,
-  RandomizeNodePositions,
-  SigmaEnableWebGL,
-} from "@react-sigma/core";
+import { SigmaContainer, ControlsContainer, ZoomControl } from "@react-sigma/core";
+import { useLoadGraph } from "@react-sigma/core";
+// import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
 
 const GraphBackground: React.FC = () => {
-  const graphInstance = new Graph();
-  graphInstance.addNode("e1", {
+  const graph = new Graph();
+  graph.addNode("e1", {
     label: "Node 1",
     x: 0,
     y: 0,
-    size: 3,
+    size: 10,
     color: "#ec5148",
   });
-
+  const graphLoad = useLoadGraph()
+  graphLoad(graph);
+  // const layout = useLayoutForceAtlas2({
+  //   graph,
+  //   worker: true,
+  //   barnesHutOptimize: true,
+  //   scalingRatio: 10,
+  //   strongGravityMode: true,
+  //   gravity: 1,
+  //   timeout: 1000,
+  //   iterationsPerRender: 1,
+  //   adjustSizes: true,
+  // });
   return (
-    <div
-      style={{
-        pointerEvents: "none",
-      }}
-    >
-      <Sigma
-        renderer="webgl"
-        settings={({
-          renderLabels: false,
-          hideEdgesOnMove: false,
-          dragTimeout: 50,
-          defaultNodeColor: "#ec5148",
-          defaultEdgeColor: "#ec5148",
-        } as any)}
-      >
-        <RelativeSize initialSize={15} />
-        <RandomizeNodePositions />
-        <ForceAtlas2
-          worker={true}
-          barnesHutOptimize={false}
-          scalingRatio={10}
-          strongGravityMode={true}
-          gravity={1}
-          timeout={1000}
-          iterationsPerRender={100}
-          adjustSizes={false}
-        />
-        {/* <EdgeShapes default="tapered" />
-        <NodeShapes default="star" /> */}
-        <LoadJSON path="./upwork.json">
-          <RandomizeNodePositions>
-            <ForceAtlas2
-              iterationsPerRender={1}
-              linLogMode
-              timeout={10000}
-              worker
-            />
-            <RelativeSize initialSize={15} />
-          </RandomizeNodePositions>
-        </LoadJSON>
-      </Sigma>
-    </div>
+    <SigmaContainer style={{ height: "100vh", pointerEvents: "none" }} settings={{ renderLabels: false }}>
+      {/* <LoadGraph graph={graph} /> */}
+      {/* <ForceAtlas2 iterationsPerRender={1} timeout={1000} settings={{ gravity: 1, scalingRatio: 10 }} /> */}
+      <ControlsContainer position={"bottom-right"}>
+        <ZoomControl />
+      </ControlsContainer>
+    </SigmaContainer>
   );
 };
 
