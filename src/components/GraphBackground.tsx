@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { SigmaContainer, useSigma } from "@react-sigma/core";
 import { useLoadGraph } from "@react-sigma/core";
 import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
 import "../graph-styles.css";
-// import "@react-sigma/core/lib/react-sigma.min.css";
 
-const GraphLoaderAndLayout: React.FC = () => {
+const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.MutableRefObject<(() => void) | null> }> = ({ onAddNodeRef }) => {
   const loadGraph = useLoadGraph();
   const sigma = useSigma();
   const { assign } = useLayoutForceAtlas2({
@@ -20,17 +19,46 @@ const GraphLoaderAndLayout: React.FC = () => {
     },
   });
   const [graphLoaded, setGraphLoaded] = useState(false);
+  const graphRef = useRef<Graph | null>(null);
+  const colors = useMemo<string[]>(() => [
+    "#3d52a0",
+    "#7091e6",
+    "#8697c4",
+    "#10b981",
+    "#34d399",
+    "#059669",
+  ], []);
+
+  const addNodeAndConnect = useCallback(() => {
+    if (!graphRef.current || !sigma) return;
+    const graph = graphRef.current;
+    const nodeId = `n${graph.order}`;
+    graph.addNode(nodeId, {
+      label: `Node ${graph.order}`,
+      x: (Math.random() - 0.5) * 2,
+      y: (Math.random() - 0.5) * 2,
+      size: Math.random() * 2 + 3,
+      color: colors[graph.order % colors.length],
+    });
+
+    const existingNodes = graph.nodes().filter(n => n !== nodeId);
+    const numConnections = Math.min(2 + Math.floor(Math.random() * 3), existingNodes.length);
+    for (let i = 0; i < numConnections; i++) {
+      const target = existingNodes[Math.floor(Math.random() * existingNodes.length)];
+      if (target && !graph.hasEdge(nodeId, target) && !graph.hasEdge(target, nodeId)) {
+        graph.addEdge(nodeId, target, {
+          size: Math.random() * 1 + 0.3,
+          color: "#444",
+        });
+      }
+    }
+    sigma.refresh();
+    assign(); // bouncy animation: { iterations: 60, settings: { slowDown: 2 } }
+    sigma.getCamera().animatedReset({ duration: 600 });
+  }, [sigma, assign, colors]);
 
   useEffect(() => {
     const graph = new Graph();
-    const colors = [
-      "#3d52a0",
-      "#7091e6",
-      "#8697c4",
-      "#10b981",
-      "#34d399",
-      "#059669",
-    ];
     const numNodes = 70;
     const numEdges = 100;
 
@@ -61,10 +89,16 @@ const GraphLoaderAndLayout: React.FC = () => {
         });
       }
     }
-
+    graphRef.current = graph;
     loadGraph(graph);
     setGraphLoaded(true);
-  }, [loadGraph]);
+  }, [loadGraph, colors]);
+  
+  // Expose the addNodeAndConnect function to parent via ref
+  useEffect(() => {
+    onAddNodeRef.current = addNodeAndConnect;
+    return () => { onAddNodeRef.current = null; };
+  }, [addNodeAndConnect, onAddNodeRef]);
 
   useEffect(() => {
     console.log("Graph loaded:", graphLoaded);
@@ -83,6 +117,21 @@ const GraphLoaderAndLayout: React.FC = () => {
 };
 
 const GraphBackground: React.FC = () => {
+  const addNodeRef = useRef<(() => void) | null>(null);
+
+  // Handle click and custom event
+  useEffect(() => {
+    const handler = () => {
+      if (addNodeRef.current) addNodeRef.current();
+    };
+    window.addEventListener("add-graph-node", handler);
+    // window.addEventListener("onClick", handler);
+    return () => {
+      window.removeEventListener("add-graph-node", handler);
+      // window.removeEventListener("onClick", handler);
+    };
+  }, []);
+
   return (
     <div
       style={{
@@ -94,13 +143,16 @@ const GraphBackground: React.FC = () => {
         zIndex: -1,
         backgroundColor: "#121212",
       }}
+      onClick={() => {
+        if (addNodeRef.current) addNodeRef.current();
+      }}
     >
       <SigmaContainer
         style={{
         width: "100%",
         height: "100%",
         zIndex: -1,
-        pointerEvents: "none",
+        // pointerEvents: "none",
         }}
         settings={{
           renderLabels: false,
@@ -118,8 +170,8 @@ const GraphBackground: React.FC = () => {
         initialCameraState: { x: 0, y: 0, ratio: 0.1 },
         }}
       >
-        <GraphLoaderAndLayout />
-    </SigmaContainer>
+        <GraphLoaderAndLayout onAddNodeRef={addNodeRef} />
+      </SigmaContainer>
     </div>
   );
 };
