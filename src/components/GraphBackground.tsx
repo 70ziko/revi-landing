@@ -3,7 +3,7 @@ import { SigmaContainer, useSigma } from "@react-sigma/core";
 import { useLoadGraph } from "@react-sigma/core";
 import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
-import "../graph-styles.css"; // Import the new CSS file
+import "../graph-styles.css";
 // import "@react-sigma/core/lib/react-sigma.min.css";
 
 const GraphLoaderAndLayout: React.FC = () => {
@@ -70,7 +70,7 @@ const GraphLoaderAndLayout: React.FC = () => {
     console.log("Graph loaded:", graphLoaded);
     console.log("Sigma instance:", sigma);
     console.log("Graph order:", sigma?.getGraph().order);
-    if (graphLoaded && sigma) { // Ensure sigma instance exists
+    if (graphLoaded && sigma) {
       assign(); 
       if (sigma && sigma.getGraph && sigma.getGraph().order > 0) { 
         sigma.refresh(); 
@@ -91,7 +91,7 @@ const GraphBackground: React.FC = () => {
         left: 0,
         width: "100%",
         height: "100vh",
-        // zIndex: 10,
+        zIndex: -1,
         backgroundColor: "#121212",
       }}
     >
@@ -115,7 +115,7 @@ const GraphBackground: React.FC = () => {
         defaultEdgeColor: "#555",
         nodeReducer: (_node: string, data) => ({ ...data, hidden: false }),
         edgeReducer: (_edge: string, data) => ({ ...data, hidden: false }),
-        initialCameraState: { x: 0, y: 0, ratio: 0.1 }, // Added initial camera state
+        initialCameraState: { x: 0, y: 0, ratio: 0.1 },
         }}
       >
         <GraphLoaderAndLayout />
