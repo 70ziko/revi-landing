@@ -1,16 +1,17 @@
-import { ThemeProvider, CssBaseline, Box } from '@mui/material';
+// import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import HowItWorks from './components/HowItWorks';
-import Benefits from './components/Benefits';
-import CTA from './components/CTA';
-import Footer from './components/Footer';
+// import Navbar from './components/Navbar';
+// import Hero from './components/Hero';
+// import Features from './components/Features';
+// import HowItWorks from './components/HowItWorks';
+// import Benefits from './components/Benefits';
+// import CTA from './components/CTA';
+// import Footer from './components/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
-// import GraphBackground from './components/GraphBackground';
+import GraphBackground from './components/GraphBackground';
 
-const theme = createTheme({
+//const theme = 
+createTheme({
   palette: {
     mode: 'dark',
     primary: {
@@ -77,10 +78,10 @@ const theme = createTheme({
 function App() {
   return (
     <ErrorBoundary>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {/* <GraphBackground /> */}
-      <Navbar />
+    {/* <ThemeProvider theme={theme}> */}
+      {/* <CssBaseline /> */}
+      <GraphBackground />
+      {/* <Navbar />
       <Box 
         component="main" 
         sx={{ 
@@ -98,15 +99,15 @@ function App() {
             },
           }
         }}
-      >
-        <Hero />
+      > */}
+        {/* <Hero />
         <Features />
         <HowItWorks />
         <Benefits />
-        <CTA />
-      </Box>
-      <Footer />
-    </ThemeProvider>
+        <CTA /> */}
+      {/* </Box> */}
+      {/* <Footer />  */}
+    {/* </ThemeProvider> */}
     </ErrorBoundary>
   );
 }

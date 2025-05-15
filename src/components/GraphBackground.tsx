@@ -33,17 +33,18 @@ const GraphLoaderAndLayout: React.FC = () => {
     const numNodes = 70;
     const numEdges = 100;
 
+    // add nodes
     for (let i = 0; i < numNodes; i++) {
       graph.addNode(`n${i}`, {
         label: `Node ${i}`,
         // initial positions closer to center
-        x: Math.random() * 5 - 2.5,
-        y: Math.random() * 5 - 2.5,
+        x: Math.random() * 5,// - 2.5,
+        y: Math.random() * 5,// - 2.5,
         size: Math.random() * 4 + 2,
         color: colors[i % colors.length],
       });
     }
-
+    // add edges
     for (let i = 0; i < numEdges; i++) {
       const sourceIndex = Math.floor(Math.random() * numNodes);
       let targetIndex = Math.floor(Math.random() * numNodes);
@@ -68,7 +69,7 @@ const GraphLoaderAndLayout: React.FC = () => {
   useEffect(() => {
     if (graphLoaded) {
       assign(); 
-      // setTimeout(() => sigma.getCamera().animatedReset({ duration: 600 }), 100);
+      setTimeout(() => sigma.getCamera().animatedReset({ duration: 600 }), 100);
     }
   }, [graphLoaded, assign, sigma]); 
 
@@ -79,28 +80,29 @@ const GraphBackground: React.FC = () => {
   return (
     <SigmaContainer
       style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100vh",
-        zIndex: -1,
-        pointerEvents: "none",
-        backgroundColor: "#121212",
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100vh",
+      zIndex: -1,
+      padding: 20,
+      // pointerEvents: "none",
+      backgroundColor: "#121212",
       }}
       settings={{
-        renderLabels: false,
-        allowInvalidContainer: true,
-        hideEdgesOnMove: true,
-        hideLabelsOnMove: true,
-        enableEdgeHoverEvents: false,
-        enableEdgeClickEvents: false,
-        enableNodeHoverEvents: false,
-        enableNodeClickEvents: false,
-        defaultNodeColor: "#7091e6",
-        defaultEdgeColor: "#555",
-        nodeReducer: (_node, data) => ({ ...data, hidden: false }),
-        edgeReducer: (_edge, data) => ({ ...data, hidden: false }),
+      renderLabels: false,
+      allowInvalidContainer: false,
+      hideEdgesOnMove: true,
+      hideLabelsOnMove: true,
+      enableEdgeHoverEvents: false,
+      enableEdgeClickEvents: false,
+      enableNodeHoverEvents: false,
+      enableNodeClickEvents: false,
+      defaultNodeColor: "#7091e6",
+      defaultEdgeColor: "#555",
+      nodeReducer: (_node: string, data) => ({ ...data, hidden: false }),
+      edgeReducer: (_edge: string, data) => ({ ...data, hidden: false }),
       }}
     >
       <GraphLoaderAndLayout />
