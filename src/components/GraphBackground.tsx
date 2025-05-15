@@ -3,16 +3,17 @@ import { SigmaContainer, useSigma } from "@react-sigma/core";
 import { useLoadGraph } from "@react-sigma/core";
 import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
+import "../graph-styles.css"; // Import the new CSS file
 // import "@react-sigma/core/lib/react-sigma.min.css";
 
 const GraphLoaderAndLayout: React.FC = () => {
   const loadGraph = useLoadGraph();
   const sigma = useSigma();
   const { assign } = useLayoutForceAtlas2({
-    iterations: 150, // Number of iterations for the layout algorithm
+    iterations: 100, 
     settings: {
       gravity: 1, 
-      scalingRatio: 10,
+      scalingRatio: 15,
       strongGravityMode: false, 
       barnesHutOptimize: true,
       barnesHutTheta: 0.6, 
@@ -37,10 +38,9 @@ const GraphLoaderAndLayout: React.FC = () => {
     for (let i = 0; i < numNodes; i++) {
       graph.addNode(`n${i}`, {
         label: `Node ${i}`,
-        // initial positions closer to center
-        x: Math.random() * 5,// - 2.5,
-        y: Math.random() * 5,// - 2.5,
-        size: Math.random() * 4 + 2,
+        x: (Math.random() - 0.5) * 2, 
+        y: (Math.random() - 0.5) * 2,
+        size: Math.random() * 2 + 3,
         color: colors[i % colors.length],
       });
     }
@@ -67,9 +67,20 @@ const GraphLoaderAndLayout: React.FC = () => {
   }, [loadGraph]);
 
   useEffect(() => {
-    if (graphLoaded) {
+    console.log("Graph loaded:", graphLoaded);
+    console.log("Sigma instance:", sigma);
+    console.log("Graph order:", sigma?.getGraph().order);
+    if (graphLoaded && sigma) { // Ensure sigma instance exists
       assign(); 
-      setTimeout(() => sigma.getCamera().animatedReset({ duration: 600 }), 100);
+      // const timer = setTimeout(() => {
+        if (sigma && sigma.getGraph && sigma.getGraph().order > 0) { 
+          sigma.resize(); 
+          sigma.refresh(); // Force sigma to recompute positions & sizes
+          sigma.getCamera().animatedReset({ duration: 600 });
+        }
+      // }, 20);
+
+      // return () => clearTimeout(timer);
     }
   }, [graphLoaded, assign, sigma]); 
 
@@ -78,35 +89,43 @@ const GraphLoaderAndLayout: React.FC = () => {
 
 const GraphBackground: React.FC = () => {
   return (
-    <SigmaContainer
+    <div
       style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100vh",
-      zIndex: -1,
-      padding: 20,
-      // pointerEvents: "none",
-      backgroundColor: "#121212",
-      }}
-      settings={{
-      renderLabels: false,
-      allowInvalidContainer: false,
-      hideEdgesOnMove: true,
-      hideLabelsOnMove: true,
-      enableEdgeHoverEvents: false,
-      enableEdgeClickEvents: false,
-      enableNodeHoverEvents: false,
-      enableNodeClickEvents: false,
-      defaultNodeColor: "#7091e6",
-      defaultEdgeColor: "#555",
-      nodeReducer: (_node: string, data) => ({ ...data, hidden: false }),
-      edgeReducer: (_edge: string, data) => ({ ...data, hidden: false }),
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100vh",
+        // zIndex: 10,
+        backgroundColor: "#121212",
       }}
     >
-      <GraphLoaderAndLayout />
+      <SigmaContainer
+        style={{
+        width: "100%",
+        height: "100%",
+        zIndex: -1,
+        pointerEvents: "none",
+        }}
+        settings={{
+          renderLabels: false,
+          allowInvalidContainer: true, 
+          hideEdgesOnMove: true,
+          hideLabelsOnMove: true,
+        enableEdgeHoverEvents: false,
+        enableEdgeClickEvents: false,
+        enableNodeHoverEvents: false,
+        enableNodeClickEvents: false,
+        defaultNodeColor: "#7091e6",
+        defaultEdgeColor: "#555",
+        nodeReducer: (_node: string, data) => ({ ...data, hidden: false }),
+        edgeReducer: (_edge: string, data) => ({ ...data, hidden: false }),
+        initialCameraState: { x: 0, y: 0, ratio: 0.1 }, // Added initial camera state
+        }}
+      >
+        <GraphLoaderAndLayout />
     </SigmaContainer>
+    </div>
   );
 };
 
