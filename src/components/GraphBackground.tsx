@@ -72,15 +72,10 @@ const GraphLoaderAndLayout: React.FC = () => {
     console.log("Graph order:", sigma?.getGraph().order);
     if (graphLoaded && sigma) { // Ensure sigma instance exists
       assign(); 
-      // const timer = setTimeout(() => {
-        if (sigma && sigma.getGraph && sigma.getGraph().order > 0) { 
-          sigma.resize(); 
-          sigma.refresh(); // Force sigma to recompute positions & sizes
-          sigma.getCamera().animatedReset({ duration: 600 });
-        }
-      // }, 20);
-
-      // return () => clearTimeout(timer);
+      if (sigma && sigma.getGraph && sigma.getGraph().order > 0) { 
+        sigma.refresh(); 
+        sigma.getCamera().animatedReset({ duration: 600 });
+      }
     }
   }, [graphLoaded, assign, sigma]); 
 
