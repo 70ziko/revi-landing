@@ -5,7 +5,7 @@ import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
 import "../styles/graph-styles.css";
 
-const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.MutableRefObject<(() => void) | null> }> = ({ onAddNodeRef }) => {
+const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void) | null> }> = ({ onAddNodeRef }) => {
   const loadGraph = useLoadGraph();
   const sigma = useSigma();
   const { assign } = useLayoutForceAtlas2({
@@ -29,17 +29,22 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.MutableRefObject<(() 
     "#059669",
   ], []);
 
-  const addNodeAndConnect = useCallback(() => {
-    if (!graphRef.current || !sigma) return;
-    const graph = graphRef.current;
-    const nodeId = `n${graph.order}`;
-    graph.addNode(nodeId, {
-      label: `Node ${graph.order}`,
-      x: (Math.random() - 0.5) * 2,
-      y: (Math.random() - 0.5) * 2,
-      size: Math.random() * 2 + 3,
-      color: colors[graph.order % colors.length],
-    });
+  const addNodeAndConnect = useCallback(
+    (coords?: { x: number; y: number }) => {
+      if (!graphRef.current || !sigma) return;
+
+      const graph = graphRef.current;
+      const nodeId = `n${graph.order}`;
+      console.log("Adding node:", nodeId, "at coords:", coords);
+      
+      if (graph.hasNode(nodeId)) return; 
+      graph.addNode(nodeId, {
+        label: `Node ${graph.order}`,
+        x: coords ? coords.x : (Math.random() - 0.5) * 2,
+        y: coords ? coords.y : (Math.random() - 0.5) * 2,
+        size: Math.random() * 2 + 3,
+        color: colors[graph.order % colors.length],
+      });
 
     const existingNodes = graph.nodes().filter(n => n !== nodeId);
     const numConnections = Math.min(2 + Math.floor(Math.random() * 3), existingNodes.length);
@@ -52,9 +57,9 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.MutableRefObject<(() 
         });
       }
     }
-    sigma.refresh();
+    // sigma.refresh();
     assign(); // bouncy animation: { iterations: 60, settings: { slowDown: 2 } }
-    sigma.getCamera().animatedReset({ duration: 600 });
+    // sigma.getCamera().animatedReset({ duration: 600 });
   }, [sigma, assign, colors]);
 
   useEffect(() => {
@@ -114,21 +119,32 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.MutableRefObject<(() 
 };
 
 const GraphBackground: React.FC = () => {
-  const addNodeRef = useRef<(() => void) | null>(null);
+  const addNodeRef = useRef<((coords?: { x: number; y: number }) => void) | null>(null);
 
-  // Handle click and custom event
   useEffect(() => {
-    const handler = () => {
-      console.log("add-graph-node event triggered");
-      if (addNodeRef.current) addNodeRef.current();
+    const handler = (e: CustomEvent<{ x: number; y: number } | undefined>) => {
+      const coords = e.detail || undefined;
+      console.log("Custom event received:", coords);
+      if (addNodeRef.current) addNodeRef.current(coords);
     };
     window.addEventListener("add-graph-node", handler);
-    // window.addEventListener("onClick", handler);
     return () => {
       window.removeEventListener("add-graph-node", handler);
-      // window.removeEventListener("onClick", handler);
     };
   }, []);
+
+  // const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   const sigma = (window as any).sigmaInstance;
+  //   if (!sigma || !addNodeRef.current) return;
+  //   const rect = (e.target as HTMLDivElement).getBoundingClientRect();
+  //   const x = e.clientX - rect.left;
+  //   const y = e.clientY - rect.top;
+  //   // Convert screen to graph coordinates
+  //   console.log("Screen coordinates on click:", { x, y });
+  //   const graphCoords = sigma.getCamera().viewportToGraph({ x, y });
+  //   console.log("Graph coordinates on click:", graphCoords);
+  //   addNodeRef.current(graphCoords);
+  // };
 
   return (
     <div
@@ -141,9 +157,8 @@ const GraphBackground: React.FC = () => {
         zIndex: -1,
         backgroundColor: "#121212",
       }}
-      onClick={() => {
-        if (addNodeRef.current) addNodeRef.current();
-      }}
+      // onClick={handleClick}
+
     >
       <SigmaContainer
         style={{
@@ -157,16 +172,19 @@ const GraphBackground: React.FC = () => {
           allowInvalidContainer: true, 
           hideEdgesOnMove: true,
           hideLabelsOnMove: true,
-        enableEdgeHoverEvents: false,
-        enableEdgeClickEvents: false,
-        enableNodeHoverEvents: false,
-        enableNodeClickEvents: false,
-        defaultNodeColor: "#7091e6",
-        defaultEdgeColor: "#555",
-        nodeReducer: (_node: string, data) => ({ ...data, hidden: false }),
-        edgeReducer: (_edge: string, data) => ({ ...data, hidden: false }),
-        initialCameraState: { x: 0, y: 0, ratio: 0.1 },
+          enableEdgeHoverEvents: false,
+          enableEdgeClickEvents: false,
+          enableNodeHoverEvents: false,
+          enableNodeClickEvents: false,
+          defaultNodeColor: "#7091e6",
+          defaultEdgeColor: "#555",
+          nodeReducer: (_node: string, data) => ({ ...data, hidden: false }),
+          edgeReducer: (_edge: string, data) => ({ ...data, hidden: false }),
+          initialCameraState: { x: 0, y: 0, ratio: 0.1 },
         }}
+        // ref={(instance: React.RefObject<{ sigma: unknown }> | null) => {
+        //   if (instance) (window as any).sigmaInstance = instance.sigma;
+        // }}
       >
         <GraphLoaderAndLayout onAddNodeRef={addNodeRef} />
       </SigmaContainer>

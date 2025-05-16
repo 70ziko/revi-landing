@@ -78,9 +78,13 @@ const theme = createTheme({
 function App() {
   useEffect(() => {
     const handleHover = (e: Event) => {
-      // trigger if the hovered element has the class
+      const mouseEvent = e as MouseEvent;
       if ((e.target as HTMLElement)?.classList.contains('graph-hover-trigger')) {
-        window.dispatchEvent(new CustomEvent('add-graph-node'));
+        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        const x = mouseEvent.clientX - rect.left;
+        const y = mouseEvent.clientY - rect.top;
+        // console.log('triggering custom event:', { x, y });
+        window.dispatchEvent(new CustomEvent("add-graph-node", { detail: { x, y } }));
       }
     };
     document.addEventListener('mouseenter', handleHover, true);
