@@ -56,8 +56,18 @@ const Navbar = () => {
             >
               GitHub
             </Button>
-            <Button variant="contained" color="primary">
-              Download App
+            <Button 
+              variant="contained" 
+              color="primary"
+              // href="#waitlist"
+              onClick={() => {
+              // const waitlistButton = document.querySelector('.waitlist-button');
+              // if (waitlistButton) {
+              //   waitlistButton.scrollIntoView({ behavior: 'smooth' });
+              // }
+              }}
+            >
+              Join waitlist
             </Button>
           </Box>
         </Toolbar>

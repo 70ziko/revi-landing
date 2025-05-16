@@ -87,7 +87,7 @@ const Hero = () => {
                     variant="contained"
                     size="large"
                     color="primary"
-                    className="graph-hover-trigger"
+                    className="graph-hover-trigger waitlist-button"
                   >
                     Join Waitlist
                   </Button>
