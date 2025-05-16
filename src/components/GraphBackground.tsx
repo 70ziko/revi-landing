@@ -9,7 +9,7 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.MutableRefObject<(() 
   const loadGraph = useLoadGraph();
   const sigma = useSigma();
   const { assign } = useLayoutForceAtlas2({
-    iterations: 100, 
+    iterations: 150, 
     settings: {
       gravity: 1, 
       scalingRatio: 15,
@@ -59,8 +59,8 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.MutableRefObject<(() 
 
   useEffect(() => {
     const graph = new Graph();
-    const numNodes = 70;
-    const numEdges = 100;
+    const numNodes = 210;
+    const numEdges = 190;
 
     // add nodes
     for (let i = 0; i < numNodes; i++) {
@@ -101,9 +101,6 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.MutableRefObject<(() 
   }, [addNodeAndConnect, onAddNodeRef]);
 
   useEffect(() => {
-    console.log("Graph loaded:", graphLoaded);
-    console.log("Sigma instance:", sigma);
-    console.log("Graph order:", sigma?.getGraph().order);
     if (graphLoaded && sigma) {
       assign(); 
       if (sigma && sigma.getGraph && sigma.getGraph().order > 0) { 
@@ -122,6 +119,7 @@ const GraphBackground: React.FC = () => {
   // Handle click and custom event
   useEffect(() => {
     const handler = () => {
+      console.log("add-graph-node event triggered");
       if (addNodeRef.current) addNodeRef.current();
     };
     window.addEventListener("add-graph-node", handler);

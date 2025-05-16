@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ThemeProvider, Box } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import Navbar from './components/Navbar';
@@ -75,6 +76,18 @@ const theme = createTheme({
 });
 
 function App() {
+  useEffect(() => {
+    const handleHover = (e: Event) => {
+      // trigger if the hovered element has the class
+      if ((e.target as HTMLElement)?.classList.contains('graph-hover-trigger')) {
+        window.dispatchEvent(new CustomEvent('add-graph-node'));
+      }
+    };
+    document.addEventListener('mouseenter', handleHover, true);
+    return () => {
+      document.removeEventListener('mouseenter', handleHover, true);
+    };
+  }, []);
   return (
     <ErrorBoundary>
     <ThemeProvider theme={theme}>
