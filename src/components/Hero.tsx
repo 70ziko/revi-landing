@@ -22,7 +22,7 @@ const Hero = () => {
   return (
     <Box
       sx={{
-        background: 'linear-gradient(180deg, rgba(74, 139, 224, 0.3) 0%, rgb(27, 27, 27) 100%)',
+        background: 'linear-gradient(180deg, rgba(74, 139, 224, 0.15) 20%, rgb(27, 27, 27) 110%)',
         pt: { xs: 12, md: 24 },
         pb: { xs: 8, md: 12 },
         pl: { xs: 2, sm: 12 },
