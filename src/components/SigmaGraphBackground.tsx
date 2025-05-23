@@ -3,7 +3,7 @@ import { SigmaContainer, useSigma } from "@react-sigma/core";
 import { useLoadGraph } from "@react-sigma/core";
 import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
-import "../../styles/graph-styles.css";
+import "../styles/graph-styles.css";
 
 const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void) | null> }> = ({ onAddNodeRef }) => {
   const loadGraph = useLoadGraph();
