@@ -3,6 +3,7 @@ import { SigmaContainer, useSigma } from "@react-sigma/core";
 import { useLoadGraph } from "@react-sigma/core";
 import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
+import type Sigma from "sigma";
 import "../styles/graph-styles.css";
 
 const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void) | null> }> = ({ onAddNodeRef }) => {
@@ -40,29 +41,47 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
       console.log("Adding node:", nodeId, "at coords:", coords);
       
       if (graph.hasNode(nodeId)) return; 
+
+      // For debug - use random position within visible area instead of trying to convert
+      const camera = sigma.getCamera();
+      const state = camera.getState();
+      console.log("Camera state:", state);
+      
+      // Generate position within current view (much more reliable than conversion)
+      const viewRatio = state.ratio;
+      const x = ((Math.random() * 2) - 1) * viewRatio + state.x;
+      const y = ((Math.random() * 2) - 1) * viewRatio + state.y;
+      console.log("Generated position in view:", { x, y });
+
       graph.addNode(nodeId, {
         label: `Node ${graph.order}`,
-        x: coords ? coords.x : (Math.random() - 0.5) * 2,
-        y: coords ? coords.y : (Math.random() - 0.5) * 2,
-        size: Math.random() * 2 + 3,
-        color: colors[graph.order % colors.length],
-      });
+        x: x,
+        y: y,
+        // Debug: make new nodes MUCH larger to spot them easily
+        size: 30, // Huge size for visibility
+        color: "#FF3333", // Bright red for visibility
+      }); 
 
-    const existingNodes = graph.nodes().filter(n => n !== nodeId);
-    const numConnections = Math.min(2 + Math.floor(Math.random() * 3), existingNodes.length);
-    for (let i = 0; i < numConnections; i++) {
-      const target = existingNodes[Math.floor(Math.random() * existingNodes.length)];
-      if (target && !graph.hasEdge(nodeId, target) && !graph.hasEdge(target, nodeId)) {
-        graph.addEdge(nodeId, target, {
-          size: Math.random() * 1 + 0.3,
-          color: "#444",
-        });
+      const existingNodes = graph.nodes().filter(n => n !== nodeId);
+      const numConnections = Math.min(2 + Math.floor(Math.random() * 3), existingNodes.length);
+      for (let i = 0; i < numConnections; i++) {
+        const target = existingNodes[Math.floor(Math.random() * existingNodes.length)];
+        if (target && !graph.hasEdge(nodeId, target) && !graph.hasEdge(target, nodeId)) {
+          graph.addEdge(nodeId, target, {
+            size: 2, // Thicker edges for debug
+            color: "#FF7700", // Orange for visibility
+          });
+        }
       }
-    }
-    // sigma.refresh();
-    assign(); // bouncy animation: { iterations: 60, settings: { slowDown: 2 } }
-    // sigma.getCamera().animatedReset({ duration: 600 });
-  }, [sigma, assign, colors]);
+      
+      // Force sigma to refresh and show the new nodes
+      sigma.refresh();
+      assign();
+      
+      // Debug: Log all nodes positions for comparison
+      console.log("New node added at", { x, y });
+      console.log("Total nodes:", graph.order);
+    }, [sigma, assign]);
 
   useEffect(() => {
     const graph = new Graph();
@@ -142,6 +161,8 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
 
 const GraphBackground: React.FC = () => {
   const addNodeRef = useRef<((coords?: { x: number; y: number }) => void) | null>(null);
+  const sigmaRef = useRef<Sigma | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: CustomEvent<{ x: number; y: number } | undefined>) => {
@@ -155,21 +176,38 @@ const GraphBackground: React.FC = () => {
     };
   }, []);
 
-  // const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-  //   const sigma = (window as any).sigmaInstance;
-  //   if (!sigma || !addNodeRef.current) return;
-  //   const rect = (e.target as HTMLDivElement).getBoundingClientRect();
-  //   const x = e.clientX - rect.left;
-  //   const y = e.clientY - rect.top;
-  //   // Convert screen to graph coordinates
-  //   console.log("Screen coordinates on click:", { x, y });
-  //   const graphCoords = sigma.getCamera().viewportToGraph({ x, y });
-  //   console.log("Graph coordinates on click:", graphCoords);
-  //   addNodeRef.current(graphCoords);
-  // };
+  // Global document-level click handler
+  useEffect(() => {
+    const globalClickHandler = (e: MouseEvent) => {
+      console.log("Global click detected");
+      if (!addNodeRef.current || !containerRef.current) return;
+      
+      // Get container position to calculate relative coordinates
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Calculate coordinates relative to container
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Only process clicks if they're within the container bounds
+      if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+        console.log("Global click within graph area:", { x, y });
+        addNodeRef.current({ x, y });
+      }
+    };
+    
+    // Add global click handler
+    document.addEventListener('click', globalClickHandler);
+    console.log("Added global click handler to document");
+    
+    return () => {
+      document.removeEventListener('click', globalClickHandler);
+    };
+  }, []);
 
   return (
     <div
+      ref={containerRef}
       style={{
         position: "fixed",
         top: 0,
@@ -179,15 +217,13 @@ const GraphBackground: React.FC = () => {
         zIndex: -1,
         backgroundColor: "#121212",
       }}
-      // onClick={handleClick}
-
     >
       <SigmaContainer
         style={{
-        width: "100%",
-        height: "100%",
-        zIndex: -1,
-        // pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+          zIndex: -1,
+          pointerEvents: "auto",
         }}
         settings={{
           renderLabels: false,
@@ -195,18 +231,18 @@ const GraphBackground: React.FC = () => {
           hideEdgesOnMove: true,
           hideLabelsOnMove: true,
           enableEdgeHoverEvents: false,
-          enableEdgeClickEvents: false,
+          enableEdgeClickEvents: true,
           enableNodeHoverEvents: false,
-          enableNodeClickEvents: false,
+          enableNodeClickEvents: true,
           defaultNodeColor: "#7091e6",
           defaultEdgeColor: "#555",
           nodeReducer: (_node: string, data) => ({ ...data, hidden: false }),
           edgeReducer: (_edge: string, data) => ({ ...data, hidden: false }),
           initialCameraState: { x: 0, y: 0, ratio: 0.1 },
         }}
-        // ref={(instance: React.RefObject<{ sigma: unknown }> | null) => {
-        //   if (instance) (window as any).sigmaInstance = instance.sigma;
-        // }}
+        ref={(instance) => {
+          sigmaRef.current = instance?.sigma;
+        }}
       >
         <GraphLoaderAndLayout onAddNodeRef={addNodeRef} />
       </SigmaContainer>

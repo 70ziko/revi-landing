@@ -94,9 +94,9 @@ function App() {
   }, []);
   return (
     <ErrorBoundary>
-    <ThemeProvider theme={theme}>
+    {/* <ThemeProvider theme={theme}> */}
       <GraphBackground />
-      <Navbar />
+      {/* <Navbar />
       <Box 
         component="main" 
         sx={{ 
@@ -121,8 +121,8 @@ function App() {
         <Benefits />
         <CTA />
       </Box>
-      <Footer /> 
-    </ThemeProvider>
+      <Footer />  */}
+    {/* </ThemeProvider> */}
     </ErrorBoundary>
   );
 }
