@@ -3,13 +3,13 @@ import { SigmaContainer, useSigma } from "@react-sigma/core";
 import { useLoadGraph } from "@react-sigma/core";
 import { useLayoutForceAtlas2 } from "@react-sigma/layout-forceatlas2";
 import Graph from "graphology";
-import "../styles/graph-styles.css";
+import "../../styles/graph-styles.css";
 
 const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void) | null> }> = ({ onAddNodeRef }) => {
   const loadGraph = useLoadGraph();
   const sigma = useSigma();
   const { assign } = useLayoutForceAtlas2({
-    iterations: 150, 
+    iterations: 1, 
     settings: {
       gravity: 1, 
       scalingRatio: 15,
@@ -19,7 +19,9 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
     },
   });
   const [graphLoaded, setGraphLoaded] = useState(false);
+  // const [isAnimating, setIsAnimating] = useState(true);
   const graphRef = useRef<Graph | null>(null);
+  const animationRef = useRef<number | null>(null);
   const colors = useMemo<string[]>(() => [
     "#3d52a0",
     "#7091e6",
@@ -104,6 +106,26 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
     onAddNodeRef.current = addNodeAndConnect;
     return () => { onAddNodeRef.current = null; };
   }, [addNodeAndConnect, onAddNodeRef]);
+
+  // Add render loop for continuous layout updates
+  useEffect(() => {
+    if (!graphLoaded ) return; //|| !isAnimating
+
+    const animate = () => {
+      // if (isAnimating) {
+        assign();
+        animationRef.current = requestAnimationFrame(animate);
+      // }
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [graphLoaded, assign]);
 
   useEffect(() => {
     if (graphLoaded && sigma) {

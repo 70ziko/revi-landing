@@ -9,7 +9,7 @@ import Benefits from './components/Benefits';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
-import GraphBackground from './components/webgl/GraphBackground';
+import GraphBackground from './components/webgl/SigmaGraphBackground';
 
 const theme = createTheme({
   palette: {
