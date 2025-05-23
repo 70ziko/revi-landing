@@ -156,33 +156,38 @@ const Hero = () => {
           </Box>
 
           {/* Right side - Mock Image */}
-          <Box
+            <Box
             sx={{
               flex: 1,
               display: "flex",
               justifyContent: "center",
               mt: { xs: 4, md: 0 },
             }}
-          >
+            >
             <Box
               component="img"
-              src="/revi-app-screenshot.jpg"
+              src="/revi-app-screenshot-cropped.jpg"
               alt="Revi App Screenshot"
+              loading="lazy"
+              decoding="async"
+              width={360}
+              // height={700}
+              // srcSet="/revi-app-screenshot.jpg 1x, /revi-app-screenshot@2x.jpg 2x"
               sx={{
-                maskImage:
-                  "linear-gradient(to bottom, black 69%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, black 69%, transparent 100%)", // For Safari compatibility
-                maxWidth: "100%",
-                height: "auto",
-                // marginTop: 2,
-                paddingTop: 2,
-                maxHeight: 700,
-                filter: "drop-shadow(0px 4px 20px rgba(0, 0, 0, 0.1))",
-                borderRadius: 4,
+              maskImage:
+                "linear-gradient(to bottom, black 69%, transparent 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, black 69%, transparent 100%)",
+              maxWidth: "100%",
+              height: "auto",
+              paddingTop: 2,
+              maxHeight: 700,
+              filter: "drop-shadow(0px 4px 20px rgba(0, 0, 0, 0.1))",
+              borderRadius: 4,
+              backgroundColor: "#222", // fallback while loading
               }}
             />
-          </Box>
+            </Box>
         </Stack>
       </Container>
     </Box>

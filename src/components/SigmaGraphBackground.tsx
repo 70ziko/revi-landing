@@ -67,7 +67,7 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
   useEffect(() => {
     const graph = new Graph();
     const numNodes = 210;
-    const numEdges = 190;
+    const numEdges = 190; 
 
     // add nodes
     for (let i = 0; i < numNodes; i++) {
@@ -107,7 +107,7 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
     return () => { onAddNodeRef.current = null; };
   }, [addNodeAndConnect, onAddNodeRef]);
 
-  // Add render loop for continuous layout updates
+  // render loop for continuous layout updates
   useEffect(() => {
     if (!graphLoaded ) return; //|| !isAnimating
 
