@@ -19,8 +19,20 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
       barnesHutTheta: 0.6, 
     },
   });
+  
+  // Add a stronger layout algorithm for node addition
+  const { assign: strongAssign } = useLayoutForceAtlas2({
+    iterations: 10,
+    settings: {
+      gravity: 1,
+      scalingRatio: 15,
+      strongGravityMode: true,
+      barnesHutOptimize: true,
+    }
+  });
+  
   const [graphLoaded, setGraphLoaded] = useState(false);
-  // const [isAnimating, setIsAnimating] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(true);
   const graphRef = useRef<Graph | null>(null);
   const animationRef = useRef<number | null>(null);
   const colors = useMemo<string[]>(() => [
@@ -36,52 +48,84 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
     (coords?: { x: number; y: number }) => {
       if (!graphRef.current || !sigma) return;
 
+      // Pause the animation loop temporarily
+      setIsAnimating(false);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+
       const graph = graphRef.current;
       const nodeId = `n${graph.order}`;
       console.log("Adding node:", nodeId, "at coords:", coords);
       
       if (graph.hasNode(nodeId)) return; 
 
-      // For debug - use random position within visible area instead of trying to convert
+      // Get current camera state
       const camera = sigma.getCamera();
       const state = camera.getState();
       console.log("Camera state:", state);
       
-      // Generate position within current view (much more reliable than conversion)
-      const viewRatio = state.ratio;
-      const x = ((Math.random() * 2) - 1) * viewRatio + state.x;
-      const y = ((Math.random() * 2) - 1) * viewRatio + state.y;
-      console.log("Generated position in view:", { x, y });
+      // Use exact center of viewable area
+      const nodePosition = {
+        x: state.x,
+        y: state.y
+      };
+      
+      console.log("Adding node at center:", nodePosition);
 
+      // First clear any existing node with this ID (just in case)
+      if (graph.hasNode(nodeId)) {
+        graph.dropNode(nodeId);
+      }
+
+      // Add node with extreme visual properties for debug
       graph.addNode(nodeId, {
-        label: `Node ${graph.order}`,
-        x: x,
-        y: y,
-        // Debug: make new nodes MUCH larger to spot them easily
-        size: 30, // Huge size for visibility
-        color: "#FF3333", // Bright red for visibility
+        label: `NEWNODE ${graph.order}`,
+        x: nodePosition.x,
+        y: nodePosition.y,
+        size: 100, // Extremely large size
+        color: "#FF00FF", // Magenta for maximum contrast
       }); 
 
+      // Create connections to other nodes
       const existingNodes = graph.nodes().filter(n => n !== nodeId);
-      const numConnections = Math.min(2 + Math.floor(Math.random() * 3), existingNodes.length);
+      // Connect to more nodes for stability
+      const numConnections = Math.min(5, existingNodes.length);
       for (let i = 0; i < numConnections; i++) {
         const target = existingNodes[Math.floor(Math.random() * existingNodes.length)];
-        if (target && !graph.hasEdge(nodeId, target) && !graph.hasEdge(target, nodeId)) {
+        if (target) {// && !graph.hasEdge(nodeId, target) && !graph.hasEdge(target, nodeId)) {
           graph.addEdge(nodeId, target, {
-            size: 2, // Thicker edges for debug
-            color: "#FF7700", // Orange for visibility
+            size: 5, // Extra thick
+            color: "#FFFF00", // Bright yellow
           });
         }
       }
       
-      // Force sigma to refresh and show the new nodes
+      // Force immediate refresh
       sigma.refresh();
+      
+      // Apply stronger layout changes - use the pre-defined strongAssign
       assign();
       
-      // Debug: Log all nodes positions for comparison
-      console.log("New node added at", { x, y });
+      // Verify node exists after operations
+      if (graph.hasNode(nodeId)) {
+        console.log("Node still exists in graph after operations", graph.getNodeAttributes(nodeId));
+      } else {
+        console.error("Node was lost after operations");
+      }
+      
+      // Reset camera with longer duration for better visibility
+      // camera.animatedReset({ duration: 800 });
+      
+      console.log("New node added at", nodePosition);
       console.log("Total nodes:", graph.order);
-    }, [sigma, assign]);
+      
+      // Resume animation after a delay
+      setTimeout(() => {
+        setIsAnimating(true);
+      }, 1000);
+    }, [sigma, strongAssign]);
 
   useEffect(() => {
     const graph = new Graph();
@@ -128,13 +172,13 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
 
   // render loop for continuous layout updates
   useEffect(() => {
-    if (!graphLoaded ) return; //|| !isAnimating
+    if (!graphLoaded || !isAnimating) return;
 
     const animate = () => {
-      // if (isAnimating) {
+      if (isAnimating) {
         assign();
         animationRef.current = requestAnimationFrame(animate);
-      // }
+      }
     };
 
     animationRef.current = requestAnimationFrame(animate);
@@ -144,7 +188,7 @@ const GraphLoaderAndLayout: React.FC<{ onAddNodeRef: React.RefObject<(() => void
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [graphLoaded, assign]);
+  }, [graphLoaded, isAnimating, assign]);
 
   useEffect(() => {
     if (graphLoaded && sigma) {
